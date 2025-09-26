@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOMENTUM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Base theme colors as CSS variables */
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border-color: #d1d5db;
+            --card-bg: #f9fafb;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg-image: none;
+        }
+
+        /* Pastel Pink Theme */
+        .pastel-pink-theme {
+            --bg-primary: #f8e1f0;
+            --bg-secondary: #ffffff;
+            --text-primary: #8b5f8c;
+            --text-secondary: #a980ac;
+            --border-color: #f1c7e9;
+            --card-bg: #fff5fa;
+            --accent-color: #e573a6;
+            --accent-hover: #d1568e;
+            --bg-image: url('https://images.unsplash.com/photo-1549480111-964205f2323f?q=80&w=2000');
+        }
+
+        /* Pastel Green Theme */
+        .pastel-green-theme {
+            --bg-primary: #e1f8f0;
+            --bg-secondary: #ffffff;
+            --text-primary: #5f8b6e;
+            --text-secondary: #80ac90;
+            --border-color: #c7f1e0;
+            --card-bg: #f5fff9;
+            --accent-color: #73e5a6;
+            --accent-hover: #56d18e;
+            --bg-image: url('https://images.unsplash.com/photo-1522071820064-f848f02f901a?q=80&w=2000');
+        }
+        
+        /* Pastel Lavender Theme */
+        .pastel-lavender-theme {
+            --bg-primary: #f0e1f8;
+            --bg-secondary: #ffffff;
+            --text-primary: #7a5f8c;
+            --text-secondary: #9080ac;
+            --border-color: #e9c7f1;
+            --card-bg: #faf5ff;
+            --accent-color: #a673e5;
+            --accent-hover: #8e56d1;
+            --bg-image: url('https://images.unsplash.com/photo-1594950346083-094d5084931a?q=80&w=2000');
+        }
+
+        /* Pastel Sky Blue Theme */
+        .pastel-sky-blue-theme {
+            --bg-primary: #e1f0f8;
+            --bg-secondary: #ffffff;
+            --text-primary: #5f788b;
+            --text-secondary: #8096ac;
+            --border-color: #c7d9f1;
+            --card-bg: #f5faff;
+            --accent-color: #73a6e5;
+            --accent-hover: #568ed1;
+            --bg-image: url('https://images.unsplash.com/photo-1587375676830-746765074213?q=80&w=2000');
+        }
+
+        /* Pastel Lemon Yellow Theme */
+        .pastel-lemon-yellow-theme {
+            --bg-primary: #f8f0e1;
+            --bg-secondary: #ffffff;
+            --text-primary: #8b855f;
+            --text-secondary: #ac9d80;
+            --border-color: #f1e7c7;
+            --card-bg: #fffaf5;
+            --accent-color: #e5d173;
+            --accent-hover: #d1b856;
+            --bg-image: url('https://images.unsplash.com/photo-1629813583626-d62f6b8c8d8c?q=80&w=2000');
+        }
+
+        .bg-white { background-color: var(--bg-secondary); }
+        .text-gray-800 { color: var(--text-primary); }
+        .text-gray-600 { color: var(--text-secondary); }
+        .border-gray-300 { border-color: var(--border-color); }
+        .bg-blue-600 { background-color: var(--accent-color); }
+        .hover\:bg-blue-700:hover { background-color: var(--accent-hover); }
+        .bg-gray-100 { background-color: var(--card-bg); }
+
+        .day-circle {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .day-circle.completed {
+            background-color: #22c55e;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        .day-circle.streak {
+            background-color: #f59e0b;
+            color: white;
+            border-color: #d97706;
+        }
+
+        .day-circle.streak-star {
+            position: relative;
+        }
+
+        .day-circle.streak-star::before {
+            content: "🌟";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.25rem;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .note-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .note-modal {
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .message-box {
+            position: fixed;
+            top: 4rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .message-box.motivational {
+            background-color: #4ade80; /* Green */
+            color: white;
+        }
+
+        .message-box.slang {
+            background-color: #8b5cf6; /* Purple */
+            color: white;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main Container -->
+    <div id="main-container" class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 md:p-10 flex flex-col space-y-8">
+        <!-- Profile/Onboarding Screen -->
+        <div id="onboarding-screen" class="flex flex-col items-center text-center p-8 space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">Welcome to MOMENTUM</h1>
+            <p class="text-gray-600 text-lg md:text-xl">Your journey to consistency starts here. What's your name?</p>
+            <input id="user-name-input" type="text" placeholder="Enter your name" class="w-full max-w-xs md:max-w-md px-4 py-2 text-lg rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-gray-800">
+            <button id="start-journey-button" class="px-8 py-3 bg-blue-600 text-white font-bold text-lg rounded-full shadow-lg hover:bg-blue-700 transition-colors">Start My Journey</button>
+        </div>
+
+        <!-- Habit Selection Screen -->
+        <div id="habit-selection-screen" class="hidden flex flex-col items-center space-y-8">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">Choose Your Habits</h1>
+                <p id="user-greeting" class="text-gray-600 text-lg mt-2">Hello, <span id="user-name">[User]</span>!</p>
+            </div>
+            
+            <div id="themes-section" class="w-full">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Choose a Theme</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button class="theme-button w-20 h-20 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 transition-all duration-200" data-theme="default" style="background-color: #f3f4f6;"></button>
+                    <button class="theme-button w-20 h-20 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 transition-all duration-200" data-theme="pastel-pink" style="background-color: #f8e1f0;"></button>
+                    <button class="theme-button w-20 h-20 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 transition-all duration-200" data-theme="pastel-green" style="background-color: #e1f8f0;"></button>
+                    <button class="theme-button w-20 h-20 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 transition-all duration-200" data-theme="pastel-lavender" style="background-color: #f0e1f8;"></button>
+                    <button class="theme-button w-20 h-20 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 transition-all duration-200" data-theme="pastel-sky-blue" style="background-color: #e1f0f8;"></button>
+                    <button class="theme-button w-20 h-20 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 transition-all duration-200" data-theme="pastel-lemon-yellow" style="background-color: #f8f0e1;"></button>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Select Your Habits (Max 3)</h2>
+                <div id="habit-list" class="flex flex-wrap gap-4 justify-center">
+                    <!-- Habits will be injected here by JS -->
+                </div>
+            </div>
+
+            <div class="w-full max-w-sm">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Or Create Your Own</h2>
+                <div class="flex items-center space-x-2">
+                    <input id="custom-habit-input" type="text" placeholder="e.g., Learn to code" class="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800">
+                    <button id="add-custom-habit-button" class="px-4 py-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition-colors">Add</button>
+                </div>
+            </div>
+            <button id="start-tracking-button" class="px-8 py-3 bg-green-500 text-white font-bold text-lg rounded-full shadow-lg hover:bg-green-600 transition-colors">Start Tracking</button>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="hidden flex-col items-center">
+            <div class="w-full flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-bars text-xl cursor-pointer text-gray-600 hover:text-gray-800 transition-colors" id="back-to-habits"></i>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800">My Habits</h1>
+                </div>
+                <button id="notifications-button" class="px-4 py-2 bg-purple-600 text-white rounded-full shadow-md hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-bell"></i> Notifications
+                </button>
+            </div>
+            <div id="habits-dashboard" class="w-full space-y-8">
+                <!-- Habit cards will be injected here -->
+            </div>
+            <div id="user-id-display" class="mt-4 text-sm text-gray-400"></div>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div id="note-modal-overlay" class="note-modal-overlay hidden">
+        <div class="note-modal flex flex-col space-y-4">
+            <h2 class="text-2xl font-bold text-gray-800">Add a Note</h2>
+            <textarea id="note-text-area" rows="4" placeholder="How did it go today?" class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"></textarea>
+            <div class="flex justify-end space-x-4">
+                <button id="cancel-note" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-full hover:bg-gray-400 transition-colors">Cancel</button>
+                <button id="save-note" class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">Save Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Box -->
+    <div id="message-box" class="message-box"></div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, getDoc, collection, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId;
+        let isAuthReady = false;
+
+        // Data and State
+        const preDefinedHabits = [
+            { name: 'Drink 8 glasses of water', emoji: '💧' },
+            { name: 'Read for 30 minutes', emoji: '📚' },
+            { name: 'Exercise', emoji: '💪' },
+            { name: 'Meditate for 10 minutes', emoji: '🧘' },
+            { name: 'Journal', emoji: '✍️' },
+            { name: 'Wake up early', emoji: '⏰' },
+            { name: 'Go for a walk', emoji: '🚶' },
+            { name: 'Eat a healthy meal', emoji: '🥗' },
+            { name: 'Learn a new skill', emoji: '🧠' },
+            { name: 'Practice a hobby', emoji: '🎨' },
+            { name: 'Call a family member', emoji: '👨‍👩‍👧‍👦' },
+            { name: 'Write 500 words', emoji: '📝' },
+            { name: 'No social media', emoji: '📱' },
+            { name: 'Stretch', emoji: '🤸' },
+            { name: 'Cook at home', emoji: '🍳' },
+            { name: 'Organize your space', emoji: '🧹' },
+            { name: 'Plan your day', emoji: '📅' },
+            { name: 'Express gratitude', emoji: '🙏' },
+            { name: 'Listen to a podcast', emoji: '🎧' },
+            { name: 'Take a cold shower', emoji: '🧊' },
+            { name: 'Learn a new language', emoji: '🗣️' },
+            { name: 'Practice an instrument', emoji: '🎶' },
+            { name: 'Do a creative activity', emoji: '💡' },
+            { name: 'Save money', emoji: '💰' },
+            { name: 'Reflect on your day', emoji: '🤔' }
+        ];
+
+        const motivationalQuotes = [
+            "You're building momentum!",
+            "Consistency is key!",
+            "One step at a time!",
+            "You've got this!",
+            "Keep going, you're on fire!",
+            "Don't stop now, you're so close!"
+        ];
+
+        const genzSlang = [
+            "Slay!",
+            "That's a big W!",
+            "You understood the assignment!",
+            "No notes!",
+            "You're the GOAT!",
+            "Periodt."
+        ];
+
+        let state = {
+            view: 'onboarding',
+            userName: '',
+            selectedHabits: [],
+            theme: 'default',
+            data: {}
+        };
+        
+        // --- Firebase Functions ---
+        async function initFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('debug');
+                
+                // The onAuthStateChanged listener is the single source of truth for user authentication state.
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                        loadUserData();
+                    }
+                });
+
+                // Start the sign-in process. The listener above will handle the result.
+                if (initialAuthToken) {
+                    signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.error("Error initializing Firebase:", e);
+                showMessage("Could not connect to the database.", 'error');
+            }
+        }
+
+        function getUserDocRef() {
+            return doc(db, 'artifacts', appId, 'users', userId, 'habits', 'user_data');
+        }
+
+        async function saveUserData() {
+            if (!isAuthReady) return;
+            try {
+                await setDoc(getUserDocRef(), state);
+                console.log("Data saved to Firestore successfully.");
+            } catch (e) {
+                console.error("Error saving document: ", e);
+                showMessage("Failed to save data to the cloud.", 'error');
+            }
+        }
+
+        async function loadUserData() {
+            if (!isAuthReady) return;
+            
+            const docRef = getUserDocRef();
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                state.view = data.view || 'onboarding';
+                state.userName = data.userName || '';
+                state.selectedHabits = data.selectedHabits || [];
+                state.theme = data.theme || 'default';
+                state.data = data.data || {};
+            }
+            
+            updateView();
+            onSnapshot(docRef, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    state.view = data.view || 'onboarding';
+                    state.userName = data.userName || '';
+                    state.selectedHabits = data.selectedHabits || [];
+                    state.theme = data.theme || 'default';
+                    state.data = data.data || {};
+                    updateView();
+                }
+            }, (error) => {
+                console.error("Error listening for changes:", error);
+            });
+        }
+        
+        // Helper Functions
+        function showMessage(message, type = 'success') {
+            const box = document.getElementById('message-box');
+            box.textContent = message;
+            box.className = 'message-box show';
+            if (type === 'motivational') {
+                box.classList.add('motivational');
+            } else if (type === 'slang') {
+                box.classList.add('slang');
+            }
+            setTimeout(() => {
+                box.classList.remove('show');
+                box.classList.remove('motivational', 'slang');
+            }, 3000);
+        }
+
+        // --- View Management ---
+        function updateView() {
+            document.getElementById('onboarding-screen').classList.add('hidden');
+            document.getElementById('habit-selection-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+
+            document.body.className = `min-h-screen p-4 transition-colors ${state.theme}-theme`;
+            
+            if (state.view === 'onboarding') {
+                document.getElementById('onboarding-screen').classList.remove('hidden');
+            } else if (state.view === 'selection') {
+                document.getElementById('habit-selection-screen').classList.remove('hidden');
+                renderHabitSelection();
+            } else if (state.view === 'dashboard') {
+                document.getElementById('dashboard-screen').classList.remove('hidden');
+                document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
+                renderDashboard();
+            }
+        }
+
+        // --- Onboarding Screen Logic ---
+        document.getElementById('start-journey-button').addEventListener('click', async () => {
+            const userName = document.getElementById('user-name-input').value.trim();
+            if (userName) {
+                state.userName = userName;
+                state.view = 'selection';
+                await saveUserData(); // This initial save creates the document. Subsequent updates are handled by the onSnapshot listener.
+                updateView();
+            } else {
+                showMessage("Please enter your name to start.", 'error');
+            }
+        });
+
+        // --- Habit Selection Logic ---
+        const habitList = document.getElementById('habit-list');
+        const customHabitInput = document.getElementById('custom-habit-input');
+        
+        function renderHabitSelection() {
+            document.getElementById('user-name').textContent = state.userName;
+            habitList.innerHTML = '';
+            preDefinedHabits.forEach(habit => {
+                const button = document.createElement('button');
+                button.innerHTML = `${habit.emoji} ${habit.name}`;
+                button.className = `px-4 py-2 rounded-full shadow-md transition-colors duration-200 
+                                     ${state.selectedHabits.includes(habit.name) ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`;
+                button.addEventListener('click', async () => {
+                    const index = state.selectedHabits.indexOf(habit.name);
+                    if (index > -1) {
+                        state.selectedHabits.splice(index, 1);
+                    } else if (state.selectedHabits.length < 3) {
+                        state.selectedHabits.push(habit.name);
+                    }
+                    await saveUserData();
+                    renderHabitSelection();
+                });
+                habitList.appendChild(button);
+            });
+            document.querySelectorAll('.theme-button').forEach(button => {
+                button.classList.remove('border-blue-500');
+                if (button.dataset.theme === state.theme) {
+                    button.classList.add('border-blue-500');
+                }
+            });
+        }
+        
+        document.getElementById('add-custom-habit-button').addEventListener('click', async () => {
+            const habit = customHabitInput.value.trim();
+            const existingHabitNames = preDefinedHabits.map(h => h.name);
+            if (habit && !existingHabitNames.includes(habit) && !state.selectedHabits.includes(habit) && state.selectedHabits.length < 3) {
+                state.selectedHabits.push(habit);
+                customHabitInput.value = '';
+                await saveUserData();
+                renderHabitSelection();
+            } else if (state.selectedHabits.length >= 3) {
+                showMessage("You can only select a maximum of 3 habits.", 'error');
+            } else {
+                showMessage("Habit is already selected or invalid.", 'error');
+            }
+        });
+        
+        document.getElementById('start-tracking-button').addEventListener('click', async () => {
+            if (state.selectedHabits.length > 0) {
+                state.view = 'dashboard';
+                state.selectedHabits.forEach(habit => {
+                    if (!state.data[habit]) {
+                        state.data[habit] = {
+                            days: Array(28).fill(false),
+                            notes: Array(28).fill('')
+                        };
+                    }
+                });
+                await saveUserData();
+                updateView();
+            } else {
+                showMessage("Please select at least one habit to start tracking.", 'error');
+            }
+        });
+        
+        document.querySelectorAll('.theme-button').forEach(button => {
+            button.addEventListener('click', async () => {
+                state.theme = button.dataset.theme;
+                await saveUserData();
+                updateView();
+                renderHabitSelection();
+            });
+        });
+        
+        document.getElementById('back-to-habits').addEventListener('click', async () => {
+            state.view = 'selection';
+            await saveUserData();
+            updateView();
+        });
+
+        // --- Dashboard Logic ---
+        const habitsDashboard = document.getElementById('habits-dashboard');
+        
+        function renderDashboard() {
+            habitsDashboard.innerHTML = '';
+            document.body.className = `min-h-screen p-4 transition-colors ${state.theme}-theme`;
+            state.selectedHabits.forEach(habit => {
+                const habitCard = document.createElement('div');
+                habitCard.className = 'bg-gray-100 p-6 rounded-xl shadow-md';
+                
+                const streak = calculateStreak(habit);
+                const is28DayStreak = streak >= 28;
+                
+                let cardHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">${habit}</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-600 font-semibold">${streak} Day Streak</span>
+                            ${is28DayStreak ? '<i class="fas fa-crown text-yellow-400 text-xl"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 sm:grid-cols-14 gap-2 md:gap-4 justify-items-center" data-habit="${habit}">`;
+                
+                for (let i = 0; i < 28; i++) {
+                    const isCompleted = state.data[habit].days[i];
+                    const isMilestone = (i + 1) % 7 === 0;
+                    const isStreakDay = isCompleted && isMilestone && streak >= i + 1;
+                    const dayClass = `day-circle ${isCompleted ? 'completed' : ''} ${isStreakDay ? 'streak-star' : ''}`;
+                    cardHTML += `
+                        <div class="${dayClass}" data-day="${i}">
+                            ${i + 1}
+                        </div>`;
+                }
+                
+                cardHTML += `</div></div>`;
+                habitCard.innerHTML = cardHTML;
+                habitsDashboard.appendChild(habitCard);
+            });
+        }
+        
+        function calculateStreak(habit) {
+            let streak = 0;
+            const days = state.data[habit].days;
+            for(let i = days.length - 1; i >= 0; i--) {
+                if (days[i]) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        // --- Event Listeners for Dashboard ---
+        document.getElementById('dashboard-screen').addEventListener('click', async (e) => {
+            const dayElement = e.target.closest('.day-circle');
+            if (dayElement) {
+                const dayIndex = parseInt(dayElement.dataset.day);
+                const habitName = e.target.closest('[data-habit]').dataset.habit;
+                
+                const isCompleted = state.data[habitName].days[dayIndex];
+                state.data[habitName].days[dayIndex] = !isCompleted;
+                await saveUserData();
+                renderDashboard();
+                
+                // Show message if a day is marked as completed
+                if (!isCompleted) {
+                    const messages = Math.random() < 0.5 ? motivationalQuotes : genzSlang;
+                    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                    const messageType = messages === motivationalQuotes ? 'motivational' : 'slang';
+                    showMessage(randomMessage, messageType);
+                }
+
+                // Show note option after a day is completed
+                if (state.data[habitName].days[dayIndex]) {
+                    showNoteOption(habitName, dayIndex);
+                }
+            }
+        });
+        
+        // --- Note Modal Logic ---
+        const noteModalOverlay = document.getElementById('note-modal-overlay');
+        const noteTextArea = document.getElementById('note-text-area');
+        const saveNoteButton = document.getElementById('save-note');
+        const cancelNoteButton = document.getElementById('cancel-note');
+        
+        let currentHabit, currentDay;
+
+        function showNoteOption(habitName, dayIndex) {
+            currentHabit = habitName;
+            currentDay = dayIndex;
+            noteTextArea.value = state.data[currentHabit].notes[currentDay] || '';
+            noteModalOverlay.classList.remove('hidden');
+        }
+
+        saveNoteButton.addEventListener('click', async () => {
+            state.data[currentHabit].notes[currentDay] = noteTextArea.value;
+            await saveUserData();
+            noteModalOverlay.classList.add('hidden');
+            showMessage("Note saved!", 'success');
+        });
+
+        cancelNoteButton.addEventListener('click', () => {
+            noteModalOverlay.classList.add('hidden');
+        });
+
+        // --- Notifications ---
+        document.getElementById('notifications-button').addEventListener('click', () => {
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    new Notification("MOMENTUM Reminder", {
+                        body: "Time to complete your habits for today!",
+                        icon: "https://placehold.co/48x48/007bff/ffffff?text=M"
+                    });
+                    showMessage("Daily notifications are active.");
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            new Notification("MOMENTUM Reminder", {
+                                body: "Time to complete your habits for today!",
+                                icon: "https://placehold.co/48x48/007bff/ffffff?text=M"
+                            });
+                            showMessage("Daily notifications are now enabled.");
+                        } else {
+                            showMessage("Notifications were denied. Please enable them in your browser settings.", 'error');
+                        }
+                    });
+                } else {
+                    showMessage("Notifications are currently blocked. Please enable them in your browser settings.", 'error');
+                }
+            } else {
+                showMessage("Your browser does not support desktop notifications.", 'error');
+            }
+        });
+
+        // Initial Load
+        window.onload = async () => {
+            await initFirebase();
+        };
+    </script>
+</body>
+</html>
