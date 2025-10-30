@@ -579,7 +579,22 @@
                 for (let i = 0; i < 28; i++) {
                     const isCompleted = state.data[habit].days[i];
                     const isMilestone = (i + 1) % 7 === 0;
-                    const isStreakDay = isCompleted && isMilestone && streak >= i + 1;
+                    
+                    // Logic for streak star: check if this milestone day is the end of a perfect streak
+                    let isStreakDay = false;
+                    if (isCompleted && isMilestone) {
+                        let perfectStreak = true;
+                        for (let j = 0; j <= i; j++) {
+                            if (!state.data[habit].days[j]) {
+                                perfectStreak = false;
+                                break;
+                            }
+                        }
+                        if (perfectStreak) {
+                            isStreakDay = true;
+                        }
+                    }
+
                     const dayClass = `day-circle ${isCompleted ? 'completed' : ''} ${isStreakDay ? 'streak-star' : ''}`;
                     cardHTML += `
                         <div class="${dayClass}" data-day="${i}">
@@ -593,17 +608,36 @@
             });
         }
         
+        // --- THIS IS THE CORRECTED FUNCTION ---
         function calculateStreak(habit) {
-            let streak = 0;
             const days = state.data[habit].days;
-            for(let i = days.length - 1; i >= 0; i--) {
+            let currentStreak = 0;
+            let lastCompletedDay = -1;
+
+            // Find the last day the user completed the habit (highest index)
+            for (let i = days.length - 1; i >= 0; i--) {
                 if (days[i]) {
-                    streak++;
-                } else {
+                    lastCompletedDay = i;
                     break;
                 }
             }
-            return streak;
+
+            // If no days are completed, streak is 0
+            if (lastCompletedDay === -1) {
+                return 0;
+            }
+
+            // Now, count backwards from that last completed day
+            // until we find a 'false' (a break in the streak)
+            for (let i = lastCompletedDay; i >= 0; i--) {
+                if (days[i]) {
+                    currentStreak++;
+                } else {
+                    // Stop as soon as we find a missed day
+                    break;
+                }
+            }
+            return currentStreak;
         }
 
         // --- Event Listeners for Dashboard ---
@@ -615,8 +649,13 @@
                 
                 const isCompleted = state.data[habitName].days[dayIndex];
                 state.data[habitName].days[dayIndex] = !isCompleted;
+                
+                // We must save *before* re-rendering to ensure the streak calculation is correct
                 await saveUserData();
-                renderDashboard();
+                
+                // We call renderDashboard() manually here to make the UI feel instant.
+                // The onSnapshot listener will also call it, which is fine and ensures data consistency.
+                renderDashboard(); 
                 
                 // Show message if a day is marked as completed
                 if (!isCompleted) {
@@ -695,3 +734,4 @@
     </script>
 </body>
 </html>
+
